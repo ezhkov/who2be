@@ -1,6 +1,5 @@
 <script>
   import {scale} from 'svelte/transition';
-  import {groups} from './test';
   import {test} from './store.js';
   import Greeting from "./Greeting.svelte";
   import Question from "./Question.svelte";
@@ -26,7 +25,6 @@
   const nextStep = (event) => {
     activeStep += 1;
     if (event.detail.group) {
-      console.log(event.detail);
       results = [...results, event.detail.group];
     }
   };
@@ -61,7 +59,7 @@
       {:else}
       <div class="result" in:scale="{{duration: 350, delay: 350, opacity: 0, start: 0.5}}"
            out:scale="{{duration: 350, opacity: 0, start: 0.5}}">
-        <Results />
+        <Results results={results} totalQuestions={test.length}/>
       </div>
       {/if}
   </div>
