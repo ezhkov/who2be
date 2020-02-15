@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import {scale} from 'svelte/transition';
   import {test} from './store.js';
   import Greeting from "./Greeting.svelte";
@@ -31,12 +32,32 @@
 
   const prevStep = () => {
     activeStep -= 1;
-    if (results.length) results = [...results.pop()];
+    if (results.length) {
+        results.pop();
+      results = [...results];
+    }
   };
+
+  function loadScript(src) {
+    return new Promise(function(resolve, reject) {
+      let script = document.createElement('script');
+      script.src = src;
+      script.onload = () => resolve(script);
+      script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+      document.head.append(script);
+    });
+  }
+
+  onMount(() => {
+    loadScript("https://www.amcharts.com/lib/4/core.js")
+        .then(script => loadScript("https://www.amcharts.com/lib/4/charts.js"))
+        .then(script => loadScript("https://www.amcharts.com/lib/4/themes/animated.js"))
+        .then(script => loadScript("https://www.amcharts.com/lib/4/themes/material.js"))
+  })
 </script>
 
 <div class="wrap {isDark ? 'violet' : 'orange'}" style="background-position: {newvalueX}px {newvalueY}px" on:mousemove={onMouseMove}>
-  <div class="test container">
+  <div class="test container {activeStep === -1 ? 'first' : ''}">
 
       {#if activeStep === -1}
         <div class="ttt" in:scale="{{duration: 350, delay: 350, opacity: 0, start: 0.5}}"
@@ -59,7 +80,7 @@
       {:else}
       <div class="result" in:scale="{{duration: 350, delay: 350, opacity: 0, start: 0.5}}"
            out:scale="{{duration: 350, opacity: 0, start: 0.5}}">
-        <Results results={results} totalQuestions={test.length}/>
+        <Results isDark={isDark} results={results} totalQuestions={test.length}/>
       </div>
       {/if}
   </div>
@@ -83,5 +104,24 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+  }
+  @media (max-width: 640px) {
+    .ttt {
+      left: 25px;
+      right: 25px;
+      top: 80px;
+      bottom: 80px;
+    }
+  }
+  @media (max-width:320px) {
+    .ttt {
+      left: 15px;
+      right: 15px;
+      top: 60px;
+      bottom: 60px;
+    }
+    .first {
+      min-height: 600px;
+    }
   }
 </style>

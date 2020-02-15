@@ -844,7 +844,6 @@ button {
   .test.container {
     width: 100%;
     padding: 80px 25px;
-    min-height: auto;
   }
 
   .test.container::before {
@@ -878,6 +877,19 @@ button {
   }
 }
 
+@media (max-width: 320px) {
+  .test.container {
+    min-height: 500px;
+    padding-top: 60px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 60px;
+  }
+  .test.container:before {
+    top: 15px;
+    left: 15px;
+  }
+}
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
   .switch, .switch.label {
     display: none;

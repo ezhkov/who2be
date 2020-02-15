@@ -4,6 +4,7 @@
 
   export let results;
   export let totalQuestions;
+  export let isDark;
 
   const countedResults = results.reduce((acc, cur) => {
     if (acc[cur]) acc[cur] += 1;
@@ -13,6 +14,7 @@
 
   let a = [];
   let chartData = [];
+  let pieSeries;
 
   for (let key in countedResults) {
     a.push({
@@ -33,24 +35,47 @@
   const mainResult = resultText[a[0].group];
   const nextResult = resultText[a[1].group];
 
-  onMount(() => {
+  function am4themes_myTheme(target) {
+    if (target instanceof am4charts.Axis) {
+      target.background.fill = am4core.color("#DCCCA3");
+    }
+  }
+
+  const createPie = () => {
+    // Create chart instance
     const chart = am4core.create(document.getElementById("pie"), am4charts.PieChart);
     am4core.useTheme(am4themes_animated);
     am4core.useTheme(am4themes_material);
+    am4core.useTheme(am4themes_myTheme);
 
-    console.log(chart);
-    console.log(chartData);
-
+    //Add data
     chart.data = [...chartData];
 
+    // Add and configure Series
     chart.innerRadius = am4core.percent(40);
-    var pieSeries = chart.series.push(new am4charts.PieSeries());
+    pieSeries = chart.series.push(new am4charts.PieSeries());
     pieSeries.dataFields.value = "points";
     pieSeries.dataFields.category = "profession";
     pieSeries.labels.template.maxWidth = 120;
     pieSeries.labels.template.wrap = true;
     pieSeries.labels.template.truncard = true;
-  })
+    pieSeries.labels.template.fill = isDark ? "#ffffff" : "#000000";
+    pieSeries.ticks.template.stroke = isDark ? "#ffffff" : "#000000";
+  };
+
+  const changeTheme = (isDark) => {
+    if (pieSeries) {
+      pieSeries.labels.template.fill = isDark ? "#ffffff" : "#000000";
+      pieSeries.ticks.template.stroke = isDark ? "#ffffff" : "#000000";
+    }
+  };
+
+
+  onMount(() => {
+    createPie();
+  });
+
+  $: changeTheme(isDark);
 
 </script>
 
